@@ -29,6 +29,7 @@ if files[0].startswith('/store/'):
 print "Sumweight:", lumiWeight
 print "Data:", isData
 print "Year:", year
+print "Era:", era
 print "FastSim", isFastSim 
 print "Files:", files
 
