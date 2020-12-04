@@ -155,3 +155,5 @@ keep is*
 keep diWness
 keep MT
 keep MT_puppi
+
+keep GenModel_*
