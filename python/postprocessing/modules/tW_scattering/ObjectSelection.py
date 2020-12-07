@@ -153,6 +153,10 @@ class PhysicsObjects(Module):
         return (((jet.pt > 25 and abs(jet.eta)<2.7) or (jet.pt>60 and abs(jet.eta)>=2.7 and abs(jet.eta)<3.0) or (jet.pt>25 and abs(jet.eta)>=3.0 and abs(jet.eta)<5.0))  and jet.jetId>1)
 
     def isGoodBJet(self, jet):
+        if self.year == 2016:
+            threshold = 0.6321
+        if self.year == 2017:
+            threshold = 0.4941
         if self.year == 2018:
             threshold = 0.4184
         return (self.isGoodJet(jet) and jet.btagDeepB > threshold)
