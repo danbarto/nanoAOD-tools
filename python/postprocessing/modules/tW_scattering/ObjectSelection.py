@@ -50,24 +50,6 @@ class PhysicsObjects(Module):
         self.out.branch("Lepton_muIndex", "I", lenVar="nLepton")
         self.out.branch("Lepton_elIndex", "I", lenVar="nLepton")
 
-        self.out.branch("RecoW_pt", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_eta", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_phi", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_mass", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_genPt", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_genEta", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_genPhi", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_genMass", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_qglSum", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_qglProd", "F", lenVar="nRecoW")
-
-
-        ## New collection of Jets. #FIXME overlap removal with GoodLeptons
-        #self.out.branch("GoodJet_pt", "F", lenVar="nGoodJet")
-        #self.out.branch("GoodJet_eta", "F", lenVar="nGoodJet")
-        #self.out.branch("GoodJet_phi", "F", lenVar="nGoodJet")
-        #self.out.branch("GoodJet_btag", "F", lenVar="nGoodJet")
-
         ##
         self.out.branch("Muon_isVeto",      "I", lenVar="nMuon")
         self.out.branch("Muon_isTight",     "I", lenVar="nMuon")
@@ -629,40 +611,7 @@ class PhysicsObjects(Module):
         #
         #if len(leptons)>1
 
-        ## W candidates
-        # get any combination of 4 non b-jets
-        # this is *very* inefficient. Need to think of a better way to reconstruct two Ws
-        recoWs = []
-#        if len(jets_out)>3 and not self.isData:
-            #W_cands = self.getWcandidates(nonbjets)
-#            recoWs = self.getRealWs(jets_out, genW)
             
-
-        ### This doesn't really work
-        diWness = 9999.
-        #recoWs = []
-        #perfectMatch = False
-        #if len(W_cands)>0:
-        #    for W_cand in W_cands:
-        #        genMatch1 = False
-        #        genMatch2 = False
-        #        for W in genW:
-        #            if not genMatch1:
-        #                genMatch1 = self.deltaR(Object.fromDict(W_cand['W'][0]), W)<0.4
-        #            if not genMatch2:
-        #                genMatch2 = self.deltaR(Object.fromDict(W_cand['W'][1]), W)<0.4
-        #        if genMatch1 and genMatch2:
-        #            perfectMatch = W_cand
-        # #           print "Nice, found the right pair"
-        #            break
-        #    
-        #    for recoW in W_cands[0]['W']:
-        #        genMatch = False
-        #        for W in genW:
-        #            genMatch = self.deltaR(Object.fromDict(recoW), W)<0.4
-        #            if genMatch: break
-        #        recoWs.append({'pt':recoW['pt'], 'eta':recoW['eta'], 'phi':recoW['phi'], 'mass':recoW['mass'], 'genMatch':genMatch})
-        #        diWness = W_cands[0]['chi2']
 
 
         self.out.fillBranch("Muon_isTight",     isTightMuon)
@@ -781,21 +730,6 @@ class PhysicsObjects(Module):
             self.out.fillBranch("Lepton_miniIso",   leptons_pd.sort_values(by='pt', ascending=False)['miniIso'].tolist() )
             self.out.fillBranch("Lepton_muIndex",   leptons_pd.sort_values(by='pt', ascending=False)['muIndex'].tolist() )
             self.out.fillBranch("Lepton_elIndex",   leptons_pd.sort_values(by='pt', ascending=False)['elIndex'].tolist() )
-
-        recoWs_pd = pd.DataFrame(recoWs)
-
-        self.out.fillBranch("nRecoW",          len(recoWs_pd) )
-        if len(recoWs_pd)>0:
-            self.out.fillBranch("RecoW_pt",        recoWs_pd['pt'].tolist() )
-            self.out.fillBranch("RecoW_eta",       recoWs_pd['eta'].tolist() )
-            self.out.fillBranch("RecoW_phi",       recoWs_pd['phi'].tolist() )
-            self.out.fillBranch("RecoW_mass",      recoWs_pd['mass'].tolist() )
-            self.out.fillBranch("RecoW_genPt",     recoWs_pd['genPt'].tolist() )
-            self.out.fillBranch("RecoW_genEta",     recoWs_pd['genEta'].tolist() )
-            self.out.fillBranch("RecoW_genPhi",     recoWs_pd['genPhi'].tolist() )
-            self.out.fillBranch("RecoW_genMass",     recoWs_pd['genMass'].tolist() )
-            self.out.fillBranch("RecoW_qglSum",     recoWs_pd['qgl_sum'].tolist() )
-            self.out.fillBranch("RecoW_qglProd",     recoWs_pd['qgl_prod'].tolist() )
 
 
         return True
