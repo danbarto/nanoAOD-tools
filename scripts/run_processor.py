@@ -13,7 +13,7 @@ from PhysicsTools.NanoAODTools.postprocessing.modules.tW_scattering.GenAnalyzer 
 from PhysicsTools.NanoAODTools.postprocessing.modules.tW_scattering.lumiWeightProducer import *
 
 from PhysicsTools.NanoAODTools.postprocessing.modules.jme.jetmetHelperRun2       import *
-
+from PhysicsTools.NanoAODTools.postprocessing.modules.common.puWeightProducer import puWeight_2018, puWeight_2017, puWeight_2016
 
 files       = sys.argv[1].split(',')
 lumiWeight  = float(sys.argv[2])
@@ -24,7 +24,7 @@ isFastSim   = int(sys.argv[6]) == 1
 
 if files[0].startswith('/store/'):
     print "Had to add a prefix"
-    files = [ 'root://cmsxrootd.fnal.gov/' + f for f in files ]
+    files = [ 'root://xrootd.t2.ucsd.edu:2040/' + f for f in files ]
 
 #json support to be added
 
@@ -34,11 +34,16 @@ print "Year:", year
 print "FastSim", isFastSim 
 print "Files:", files
 
-jetmet = createJMECorrector(isMC=(not isData), dataYear=year, runPeriod=era, jesUncert="Total", jetType = "AK4PFchs", applySmearing = True, isFastSim = isFastSim )
+# corrector for Type-1 MET
+met = createJMECorrector(isMC=(not isData), dataYear=year, runPeriod=era, jesUncert="Total", jetType = "AK4PFchs", applySmearing = False, isFastSim = isFastSim )
+
+# corrector for AK8 jets
+ak8 = createJMECorrector(isMC=(not isData), dataYear=year, runPeriod=era, jesUncert="Total", jetType = "AK8PFPuppi", applySmearing = True, isFastSim = isFastSim )
 
 modules = [\
     lumiWeightProd(lumiWeight, isData),
-    jetmet()
+    met(),
+    ak8(),
     ]
 
 if not isData:
@@ -50,6 +55,7 @@ if not isData:
         if re.search("NuPt", f): isWExt=True
         print isW, isWExt
     modules += [genAnalyzer(isW, isWExt)]
+    modules += [puWeight_2018()]
 
 modules += [\
     selector(year, isData),
@@ -57,7 +63,11 @@ modules += [\
 
 if isData:
     if year==2018:
-        jsonInput='PhysicsTools/NanoAODTools/python/postprocessing/modules/tW_scattering/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt'
+        jsonInput='PhysicsTools/NanoAODTools/data/lumi/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt'
+    elif year==2017:
+        jsonInput='PhysicsTools/NanoAODTools/data/lumi/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt'
+    elif year==2016:
+        jsonInput='PhysicsTools/NanoAODTools/data/lumi/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt'
     else:
         jsonInput=None # FIXME
 else:
@@ -69,7 +79,8 @@ cut  = 'PV_ndof>4 && sqrt(PV_x*PV_x+PV_y*PV_y)<=2 && abs(PV_z)<=24'
 cut += '&& MET_pt>200'
 cut += '&& Sum$(Jet_pt>30&&abs(Jet_eta<2.4))>=2'
 
-p = PostProcessor('./', files, cut=cut, modules=modules,fwkJobReport=True, prefetch=True,\
+#p = PostProcessor('./', files, cut=cut, modules=modules,fwkJobReport=True, prefetch=True,\
+p = PostProcessor('./', files, cut=cut, modules=modules,fwkJobReport=True, prefetch=False,\
 #    branchsel='PhysicsTools/NanoAODTools/python/postprocessing/modules/tW_scattering/keep_and_drop_in.txt',\
     outputbranchsel='PhysicsTools/NanoAODTools/python/postprocessing/modules/tW_scattering/keep_and_drop.txt',
     jsonInput=jsonInput )
