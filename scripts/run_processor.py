@@ -13,6 +13,23 @@ from PhysicsTools.NanoAODTools.postprocessing.modules.tW_scattering.lumiWeightPr
 
 from PhysicsTools.NanoAODTools.postprocessing.modules.jme.jetmetHelperRun2       import *
 
+import uproot
+
+import signal
+from contextlib import contextmanager
+
+class TimeoutException(Exception): pass
+
+@contextmanager
+def time_limit(seconds):
+    def signal_handler(signum, frame):
+        raise TimeoutException("Timed out!")
+    signal.signal(signal.SIGALRM, signal_handler)
+    signal.alarm(seconds)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
 
 files       = sys.argv[1].split(',')
 lumiWeight  = float(sys.argv[2])
@@ -22,8 +39,21 @@ era         = sys.argv[5]
 isFastSim   = int(sys.argv[6]) == 1
 
 if files[0].startswith('/store/'):
+    #redirector = 'root://xrootd.t2.ucsd.edu:2040/'
+    #prefetch = False
+    #try:
+    #    with time_limit(10):
+    #        f = uproot.open(redirector + files[0] )
+    #except TimeoutException as e:
+    #    print("Timed out with SoCal redirector. Fallback to FNAL!")
+    #    redirector = 'root://cmsxrootd.fnal.gov/'
+    #    prefetch = True
+    redirector = 'root://cmsxrootd.fnal.gov/'
+    prefetch = True
     print "Had to add a prefix"
-    files = [ 'root://cmsxrootd.fnal.gov/' + f for f in files ]
+    files = [ redirector + f for f in files ]
+
+
 
 #json support to be added
 print "Sumweight:", lumiWeight
@@ -63,7 +93,7 @@ cut += '&& ( ( (Sum$(Electron_pt>10&&abs(Electron_eta)<2.4)+Sum$(Muon_pt>10&&abs
 cut += '|| (Sum$(Jet_pt>25&&abs(Jet_eta)<2.4)>=2 && (Sum$(Electron_pt>10&&abs(Electron_eta)<2.4)+Sum$(Muon_pt>10&&abs(Muon_eta)<2.4&&Muon_mediumId>0))>=3) ) )'
 
 
-p = PostProcessor('./', files, cut=cut, modules=modules,fwkJobReport=True, prefetch=True,\
+p = PostProcessor('./', files, cut=cut, modules=modules,fwkJobReport=True, prefetch=prefetch,\
 #    branchsel='PhysicsTools/NanoAODTools/python/postprocessing/modules/tW_scattering/keep_and_drop_in.txt',\
     outputbranchsel='PhysicsTools/NanoAODTools/python/postprocessing/modules/tW_scattering/keep_and_drop.txt',
     jsonInput=jsonInput )
