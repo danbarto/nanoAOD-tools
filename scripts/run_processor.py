@@ -24,7 +24,8 @@ isFastSim   = int(sys.argv[6]) == 1
 
 if files[0].startswith('/store/'):
     print "Had to add a prefix"
-    files = [ 'root://xrootd.t2.ucsd.edu:2040/' + f for f in files ]
+    #files = [ 'root://xrootd.t2.ucsd.edu:2040/' + f for f in files ] #FIXME xcache not working all the time..
+    files = [ 'root://cmsxrootd.fnal.gov/' + f for f in files ]
 
 #json support to be added
 
@@ -38,7 +39,9 @@ print "Files:", files
 met = createJMECorrector(isMC=(not isData), dataYear=year, runPeriod=era, jesUncert="Total", jetType = "AK4PFchs", applySmearing = False, isFastSim = isFastSim )
 
 # corrector for AK8 jets
-ak8 = createJMECorrector(isMC=(not isData), dataYear=year, runPeriod=era, jesUncert="Total", jetType = "AK8PFPuppi", applySmearing = True, isFastSim = isFastSim )
+AK8_type = "AK8PFchs" if int(year) == 2016 and isFastSim else "AK8PFPuppi" # there are no puppi JECs for 2016 rn. #FIXME needs to be checked!
+print "Using the following jet type for AK8:", AK8_type
+ak8 = createJMECorrector(isMC=(not isData), dataYear=year, runPeriod=era, jesUncert="Total", jetType = AK8_type, applySmearing = True, isFastSim = isFastSim )
 
 modules = [\
     lumiWeightProd(lumiWeight, isData),
@@ -80,7 +83,7 @@ cut += '&& MET_pt>200'
 cut += '&& Sum$(Jet_pt>30&&abs(Jet_eta<2.4))>=2'
 
 #p = PostProcessor('./', files, cut=cut, modules=modules,fwkJobReport=True, prefetch=True,\
-p = PostProcessor('./', files, cut=cut, modules=modules,fwkJobReport=True, prefetch=False,\
+p = PostProcessor('./', files, cut=cut, modules=modules,fwkJobReport=True, prefetch=True,\
 #    branchsel='PhysicsTools/NanoAODTools/python/postprocessing/modules/tW_scattering/keep_and_drop_in.txt',\
     outputbranchsel='PhysicsTools/NanoAODTools/python/postprocessing/modules/tW_scattering/keep_and_drop.txt',
     jsonInput=jsonInput )
