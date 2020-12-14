@@ -76,6 +76,13 @@ keep GenQfromW*
 
 #Triggers
 keep HLT_PFMET*
+keep HLT_PFHT*
+keep HLT_Ele*
+keep HLT_Mu*
+keep HLT_TkMu*
+keep HLT_DoubleEle*
+keep HLT_Photon*
+
 
 #General Event Info
 keep event
