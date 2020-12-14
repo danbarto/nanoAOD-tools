@@ -1,13 +1,13 @@
 # this is a comment
 drop * # start with all
 
+keep puWeight*
+
 #GenInfo
 keep GenJet*
 keep GenMET*
 keep GenW*
 keep GenH*
-keep Genb*
-keep Genj*
 keep GenL*
 keep GenModel_TChiWH*
 keep GenPart*
@@ -35,14 +35,11 @@ keep Tau_pt
 keep Tau_eta
 keep Tau_idMVAnewDM2017v2
 keep Tau_idDecayMode
-keep nVetoTau
 keep IsoTrack_pdgId
 keep IsoTrack_phi
 keep IsoTrack_pt
 keep IsoTrack_eta
 keep IsoTrack_*RelIso*
-keep nVetoIsoTrack
-keep nLep*
 
 #Jets
 keep nJet
@@ -54,9 +51,6 @@ keep Jet_phi
 keep Jet_btag*
 keep Jet_genJetIdx
 keep Jet_*Flavour
-keep GoodJet*
-keep nBJet
-keep BJet*
 
 #FatJets
 keep FatJet_deepTagMD_HbbvsQCD
@@ -64,45 +58,21 @@ keep FatJet_deepTagMD_WvsQCD
 keep FatJet_deepTag_WvsQCD
 keep FatJet_deepTag_H
 keep FatJet_deepTagMD_bbvsLight
-keep FatJet_eta
+keep FatJet_eta*
 keep FatJet_phi
-keep FatJet_pt
-keep FatJet_mass
-keep FatJet_msoftdrop
+keep FatJet_pt*
+keep FatJet_mass*
+keep FatJet_msoftdrop*
 keep FatJet_jetId
 keep nFatJet
-keep GoodFatJet*
-keep nBFatJet
-keep BFatJet* 
 
 #MET
 keep MET*
 keep Flag_*
 
-#Higgs
-keep nH
-keep bjetmatchedH*
-keep nbb
-keep bb*
-keep ak4matchedH*
-
-#W Boson
-keep nW
-keep W*
-keep njj
-keep jj*
-
-#Event Kinematics
-#keep MTWmet
-#keep MTHmet
-#keep Dphi*
-#keep mindphijmet
-#keep minMTbmet
-#keep MTak8jmet
-keep nWH
-#keep WHptMET
-keep njmH
-keep nbmH
+# Gen
+keep GenBfromH*
+keep GenQfromW*
 
 #Triggers
 keep HLT_PFMET*
