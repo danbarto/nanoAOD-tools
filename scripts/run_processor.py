@@ -67,7 +67,13 @@ if not isData:
         if re.search("Autumn18", f): year=2018
         print "tt+jets File type: ", isT, isTExt
     modules += [genAnalyzer(isW, isWExt, isT, isTExt, year)]
-    modules += [puWeight_2018()]
+    if year==2018:
+        modules += [puWeight_2018()]
+    elif year==2017:
+        modules += [puWeight_2017()]
+    elif year==2016:
+        modules += [puWeight_2016()]
+
 
 modules += [\
     selector(year, isData),
