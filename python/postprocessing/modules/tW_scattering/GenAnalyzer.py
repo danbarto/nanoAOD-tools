@@ -31,11 +31,12 @@ def hasBit(value,bit):
 
 class GenAnalyzer(Module):
 
-    def __init__(self,isW,isWExt):
+    def __init__(self,isW,isWExt,isT,isTExt,year):
         self.isW = isW
         self.isWExt = isWExt
-        print isW
-        print isWExt
+        self.isT = isT
+        self.isTExt = isTExt
+        self.year = year
         pass
 
     def beginJob(self):
@@ -150,7 +151,8 @@ class GenAnalyzer(Module):
         #MET
         met_pt  = event.MET_pt
         met_phi = event.MET_phi
-        
+        genMET_pt  = event.GenMET_pt
+
         #Particles
         GenParts    = Collection(event, "GenPart")
         GenAK8Jets  = Collection(event, "GenJetAK8")
@@ -184,6 +186,13 @@ class GenAnalyzer(Module):
                 sumPt = sumPt + nu.pt
             if self.isWExt and sumPt <200: stitch = False
             if not self.isWExt and sumPt >200: stitch = False
+        elif self.isT:
+            if self.year == 2018:
+                if self.isTExt and genMET_pt<80: stitch = False
+                if not self.isTExt and genMET_pt>80: stitch = False
+            else:
+                if self.isTExt and genMET_pt<150: stitch = False
+                if not self.isTExt and genMET_pt>150: stitch = False
 
 
         #--------------------------------------FILL---BRANCHES-----------------------------------------#
@@ -243,4 +252,4 @@ class GenAnalyzer(Module):
 
 # define modules using the syntax 'name = lambda : constructor' to avoid having them loaded when not needed
 
-genAnalyzer = lambda  isW, isWExt : GenAnalyzer( isW=isW, isWExt=isWExt )
+genAnalyzer = lambda  isW, isWExt, isT, isTExt, year : GenAnalyzer( isW=isW, isWExt=isWExt, isT=isT, isTExt=isTExt, year=year )

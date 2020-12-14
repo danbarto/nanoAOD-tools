@@ -52,12 +52,21 @@ modules = [\
 if not isData:
     isW = False
     isWExt = False
+    isT = False
+    isTExt = False
+    year = 0
     for f in files:
         print f
         if re.search("W[1-4]Jets", f): isW=True
         if re.search("NuPt", f): isWExt=True
-        print isW, isWExt
-    modules += [genAnalyzer(isW, isWExt)]
+        print "W+jets File type: ", isW, isWExt
+        if re.search("TTJets", f): isT=True
+        if re.search("genMET", f): isTExt=True
+        if re.search("Summer16", f): year=2016
+        if re.search("Fall17", f): year=2017
+        if re.search("Autumn18", f): year=2018
+        print "tt+jets File type: ", isT, isTExt
+    modules += [genAnalyzer(isW, isWExt, isT, isTExt, year)]
     modules += [puWeight_2018()]
 
 modules += [\
