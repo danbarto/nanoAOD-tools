@@ -12,6 +12,7 @@ from PhysicsTools.NanoAODTools.postprocessing.modules.tW_scattering.GenAnalyzer 
 from PhysicsTools.NanoAODTools.postprocessing.modules.tW_scattering.lumiWeightProducer import *
 
 from PhysicsTools.NanoAODTools.postprocessing.modules.jme.jetmetHelperRun2       import *
+from PhysicsTools.NanoAODTools.postprocessing.modules.common.puWeightProducer import puWeight_2018, puWeight_2017, puWeight_2016
 
 import uproot
 
@@ -38,9 +39,12 @@ year        = int(sys.argv[4])
 era         = sys.argv[5]
 isFastSim   = int(sys.argv[6]) == 1
 
+prefetch = False
+
 if files[0].startswith('/store/'):
-    #redirector = 'root://xrootd.t2.ucsd.edu:2040/'
-    #prefetch = False
+    #redirector = 'root://xrootd.t2.ucsd.edu:2040/' ## old redirector
+    redirector = 'root://xcache-redirector.t2.ucsd.edu:2040/'
+    prefetch = False
     #try:
     #    with time_limit(10):
     #        f = uproot.open(redirector + files[0] )
@@ -48,8 +52,8 @@ if files[0].startswith('/store/'):
     #    print("Timed out with SoCal redirector. Fallback to FNAL!")
     #    redirector = 'root://cmsxrootd.fnal.gov/'
     #    prefetch = True
-    redirector = 'root://cmsxrootd.fnal.gov/'
-    prefetch = True
+    #redirector = 'root://cmsxrootd.fnal.gov/'
+    #prefetch = True
     print "Had to add a prefix"
     files = [ redirector + f for f in files ]
 
@@ -72,6 +76,13 @@ modules = [\
 
 if not isData:
     modules += [genAnalyzer()]
+    if year==2018:
+        modules += [puWeight_2018()]
+    elif year==2017:
+        modules += [puWeight_2017()]
+    elif year==2016:
+        modules += [puWeight_2016()]
+
 
 modules += [\
     selector(year, isData),
@@ -79,7 +90,11 @@ modules += [\
 
 if isData:
     if year==2018:
-        jsonInput='PhysicsTools/NanoAODTools/python/postprocessing/modules/tW_scattering/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt'
+        jsonInput='PhysicsTools/NanoAODTools/data/lumi/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt'
+    elif year==2017:
+        jsonInput='PhysicsTools/NanoAODTools/data/lumi/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt'
+    elif year==2016:
+        jsonInput='PhysicsTools/NanoAODTools/data/lumi/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt'
     else:
         jsonInput=None # FIXME
 else:
@@ -89,7 +104,7 @@ else:
 cut  = 'PV_ndof>4 && sqrt(PV_x*PV_x+PV_y*PV_y)<=2 && abs(PV_z)<=24'
 # loose skim
 #cut += '&& (Sum$(Electron_pt>25&&abs(Electron_eta)<2.4)+Sum$(Muon_pt>25&&abs(Muon_eta)<2.4&&Muon_mediumId>0))>0 && (Sum$(Electron_pt>10&&abs(Electron_eta)<2.4)+Sum$(Muon_pt>10&&abs(Muon_eta)<2.4&&Muon_mediumId>0))>1'
-cut += '&& ( ( (Sum$(Electron_pt>10&&abs(Electron_eta)<2.4)+Sum$(Muon_pt>10&&abs(Muon_eta)<2.4&&Muon_mediumId>0))>1 && ( (Sum$(Jet_pt>25&&abs(Jet_eta)<2.4)>=3) ) '
+cut += '&& ( ( (Sum$(Electron_pt>10&&abs(Electron_eta)<2.4)+Sum$(Muon_pt>10&&abs(Muon_eta)<2.4&&Muon_mediumId>0))>1 && ( (Sum$(Jet_pt>25&&abs(Jet_eta)<2.4)>=2) ) '
 cut += '|| (Sum$(Jet_pt>25&&abs(Jet_eta)<2.4)>=2 && (Sum$(Electron_pt>10&&abs(Electron_eta)<2.4)+Sum$(Muon_pt>10&&abs(Muon_eta)<2.4&&Muon_mediumId>0))>=3) ) )'
 
 
