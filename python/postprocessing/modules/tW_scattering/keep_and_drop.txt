@@ -19,12 +19,7 @@ keep Jet_bRegCorr
 keep Jet_muonSubtrFactor
 keep Jet_puId
 keep Jet_rawFactor
-keep Jet_isGoodJet
-keep Jet_isGoodJetAll
-keep Jet_isGoodBJet
-keep Jet_leptonClean
 keep Jet_qgl
-keep Jet_WIdx
 
 keep nFatJet
 keep FatJet_pt
@@ -61,8 +56,6 @@ keep Electron_dxy
 keep Electron_dz
 keep Electron_sip3d
 keep Electron_pdgId
-keep Electron_isTight
-keep Electron_isVeto
 keep Electron_deltaEtaSC
 keep Electron_eCorr
 keep Electron_eInvMinusPInv
@@ -94,8 +87,6 @@ keep Muon_pfRelIso03_all
 keep Muon_mediumId
 keep Muon_looseId
 keep Muon_pdgId
-keep Muon_isTight
-keep Muon_isVeto
 keep Muon_sip3d
 keep Muon_ptErr
 keep Muon_miniPFRelIso_all
@@ -137,23 +128,13 @@ keep run
 keep luminosityBlock
 keep genWeight
 keep weight
-keep nGoodBTag
-keep nGoodJet
 keep nLepFromTop
 keep nGenTau
 keep nLepFromTau
 keep nLepFromW
 keep nLepFromZ
-keep nVetoLepton
 keep GenL*
 keep W*
 keep Top*
 keep Spectator*
 keep Scatter*
-keep RecoW*
-keep is*
-keep diWness
-keep MT
-keep MT_puppi
-
-keep GenModel_*

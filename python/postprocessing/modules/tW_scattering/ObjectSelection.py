@@ -50,50 +50,8 @@ class PhysicsObjects(Module):
         self.out.branch("Lepton_muIndex", "I", lenVar="nLepton")
         self.out.branch("Lepton_elIndex", "I", lenVar="nLepton")
 
-        self.out.branch("RecoW_pt", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_eta", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_phi", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_mass", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_genPt", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_genEta", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_genPhi", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_genMass", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_qglSum", "F", lenVar="nRecoW")
-        self.out.branch("RecoW_qglProd", "F", lenVar="nRecoW")
-
-
-        ## New collection of Jets. #FIXME overlap removal with GoodLeptons
-        #self.out.branch("GoodJet_pt", "F", lenVar="nGoodJet")
-        #self.out.branch("GoodJet_eta", "F", lenVar="nGoodJet")
-        #self.out.branch("GoodJet_phi", "F", lenVar="nGoodJet")
-        #self.out.branch("GoodJet_btag", "F", lenVar="nGoodJet")
-
-        ##
-        self.out.branch("Muon_isVeto",      "I", lenVar="nMuon")
-        self.out.branch("Muon_isTight",     "I", lenVar="nMuon")
-        self.out.branch("Electron_isVeto",  "I", lenVar="nElectron")
-        self.out.branch("Electron_isTight", "I", lenVar="nElectron")
-        self.out.branch("Jet_isGoodJet",    "I", lenVar="nJet")
-        self.out.branch("Jet_isGoodJetAll", "I", lenVar="nJet")
-        self.out.branch("Jet_isGoodBJet",   "I", lenVar="nJet")
-        self.out.branch("Jet_leptonClean",  "I", lenVar="nJet")
-        self.out.branch("Jet_WIdx",  "I", lenVar="nJet")
-
-
-        # Counter for good b-tags
+        # Counters
         self.out.branch("nLepton",      "I")
-        self.out.branch("nVetoLepton",  "I")
-        self.out.branch("nGoodJet",     "I")
-        self.out.branch("nGoodBTag",    "I")
-
-        self.out.branch("isSingleLep",  "I")
-        self.out.branch("isDiLep",      "I")
-        self.out.branch("isTriLep",     "I")
-        self.out.branch("isSS",         "I")
-
-        self.out.branch("diWness",      "F")
-        self.out.branch("MT",      "F")
-        self.out.branch("MT_puppi",      "F")
 
     def endFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         pass
@@ -196,196 +154,20 @@ class PhysicsObjects(Module):
         muons       = Collection(event, "Muon")
         electrons   = Collection(event, "Electron")
         jets        = Collection(event, "Jet")
-        if not self.isData:
-            genjets     = Collection(event, "GenJet")
-            genW        = Collection(event, "W")
         
-        # MET
-        met_pt  = event.MET_pt
-        met_phi = event.MET_phi
-
-        # Puppi MET
-        puppi_met_pt = event.PuppiMET_pt
-        puppi_met_phi = event.PuppiMET_phi
-
         # tight lepton collection, will be sorted by pt
         leptons     = []
-        vleptons    = []
-
-        isTightMuon = []
-        isVetoMuon = []
         for i,mu in enumerate(muons):
-            mu.isTight  = self.isTightMuon(mu)
-            mu.isVeto   = self.isVetoMuon(mu)
-            isTightMuon.append(mu.isTight)
-            isVetoMuon.append(mu.isVeto)
-            if self.isTightMuon(mu):
-                leptons.append({'pt':mu.pt, 'eta':mu.eta, 'phi':mu.phi, 'pdgId':mu.pdgId, 'miniIso':mu.miniPFRelIso_all, 'muIndex':i, 'elIndex':-1, 'mass':mu.mass})
-            if self.isVetoMuon(mu):
-                vleptons.append({'pt':mu.pt, 'eta':mu.eta, 'phi':mu.phi, 'pdgId':mu.pdgId, 'miniIso':mu.miniPFRelIso_all, 'muIndex':i, 'elIndex':-1, 'mass':mu.mass})
+            leptons.append({'pt':mu.pt, 'eta':mu.eta, 'phi':mu.phi, 'pdgId':mu.pdgId, 'miniIso':mu.miniPFRelIso_all, 'muIndex':i, 'elIndex':-1, 'mass':mu.mass})
 
-
-        isTightElectron = []
-        isVetoElectron = []
         for i,el in enumerate(electrons):
-            el.isTight  = self.isTightElectron(el)
-            el.isVeto   = self.isVetoElectron(el)
-            isTightElectron.append(el.isTight)
-            isVetoElectron.append(el.isVeto)
-            if self.isTightElectron(el):
-                leptons.append({'pt':el.pt, 'eta':el.eta, 'phi':el.phi, 'pdgId':el.pdgId, 'miniIso':el.miniPFRelIso_all, 'muIndex':-1, 'elIndex':i, 'mass':el.mass})
-            if self.isVetoElectron(el):
-                vleptons.append({'pt':el.pt, 'eta':el.eta, 'phi':el.phi, 'pdgId':el.pdgId, 'miniIso':el.miniPFRelIso_all, 'muIndex':-1, 'elIndex':i, 'mass':el.mass})
+            leptons.append({'pt':el.pt, 'eta':el.eta, 'phi':el.phi, 'pdgId':el.pdgId, 'miniIso':el.miniPFRelIso_all, 'muIndex':-1, 'elIndex':i, 'mass':el.mass})
 
         leptons = sorted(leptons, key = lambda i: i['pt'], reverse=True)
         
-        isSingleLep = len(leptons)==1
-        isDiLep     = len(leptons)==2
-        isTriLep    = len(leptons)==3
-
-        isSS = False
-        if len(leptons)>1:
-            isSS = leptons[0]['pdgId']*leptons[1]['pdgId']>0
-
-        MT = -1
-        MT_puppi = -1
-        if len(leptons)>0:
-            MT = math.sqrt(2*leptons[0]['pt']*met_pt*(1-math.cos(leptons[0]['phi']-met_phi)))
-            MT_puppi = math.sqrt(2*leptons[0]['pt']*puppi_met_pt*(1-math.cos(leptons[0]['phi']-puppi_met_phi)))
-
-        cleanMaskV  = []
-        isGoodJet   = []
-        isGoodBJet  = []
-        isGoodJetAll = []
-
-        fwdjets     = []
-        jets_out    = []
-        bjets       = []
-        nonbjets    = []
-        alljets = []
-        WIdx = []
-
-        for j in jets:
-
-            j.cleanMask = 1
-            for coll in [electrons, muons]:
-                for p in coll:
-                    if p.isVeto:
-                        if self.deltaR(j, p) < 0.4:
-                            j.cleanMask = 0
-
-            isGoodJet.append(1 if (self.isGoodJet(j) and j.cleanMask) else 0)
-            isGoodJetAll.append(1 if (self.isFwdJet(j) and j.cleanMask) else 0)
-            isGoodBJet.append(1 if (self.isGoodBJet(j) and j.cleanMask) else 0)
-            
-            cleanMaskV.append(j.cleanMask)
-
-
-            # now get some info from the GenJets
-            j.WIdx = -1
-            if not self.isData:
-                if j.genJetIdx>-1 and j.genJetIdx<len(genjets): # apparently lowest pt genjets are not stored...
-                    j.WIdx = genjets[j.genJetIdx].WIdx
-            WIdx.append(j.WIdx)
-
-            alljets.append({'pt':j.pt, 'eta':j.eta, 'phi':j.phi, 'qgl':j.qgl, 'WIdx':j.WIdx})
-
-            # Fill the other collections
-            if j.cleanMask:
-
-                if self.isGoodJet(j):
-                    jets_out.append({'pt':j.pt_nom, 'eta':j.eta, 'phi':j.phi, 'qgl':j.qgl, 'WIdx':j.WIdx, 'mass':j.mass_nom})
-                    
-                    if self.isGoodBJet(j):
-                        bjets.append({'pt':j.pt, 'eta':j.eta, 'phi':j.phi})
-                    else:
-                        nonbjets.append({'pt':j.pt_nom, 'eta':j.eta, 'phi':j.phi, 'qgl':j.qgl, 'WIdx':j.WIdx, 'mass':j.mass_nom})
-                
-                if self.isFwdJet(j):
-                    fwdjets.append({'pt':j.pt, 'eta':j.eta, 'phi':j.phi})
-
-            #for idx, gjet in enumerate(genjets):
-            #    if 
-                       
-
-        # make sure the jets are properly sorted. they _should_ be sorted, but this can change once we reapply JECs if necessary
-        bjets       = sorted(bjets, key = lambda i: i['pt'], reverse=True)
-        nonbjets    = sorted(nonbjets, key = lambda i: i['pt'], reverse=True)
-        fwdjets     = sorted(fwdjets, key = lambda i: i['pt'], reverse=True) # all jets, including forward ones
-        jets_out    = sorted(jets_out, key = lambda i: i['pt'], reverse=True)
-
-        # calculate MT, Mlb, Mlb_max, M_jj_b1, M_jj_b2 etc
-        Mlb_00 = -99 # leading lepton, first b-jet
-        Mlb_01 = -99 # leading lepton, second b-jet
-        Mlb_10 = -99 # trailing lepton, first b-jet
-        Mlb_11 = -99 # trailing lepton, second b-jet
-
-        #if len(jets)>0:
-        #    if len(leptons)>0:
-        #        Mlb_00 = 
-        #
-        #if len(leptons)>1
-
-        ## W candidates
-        # get any combination of 4 non b-jets
-        # this is *very* inefficient. Need to think of a better way to reconstruct two Ws
-        recoWs = []
-        if len(jets_out)>3 and not self.isData:
-            #W_cands = self.getWcandidates(nonbjets)
-            recoWs = self.getRealWs(jets_out, genW)
-            
-
-        ### This doesn't really work
-        diWness = 9999.
-        #recoWs = []
-        #perfectMatch = False
-        #if len(W_cands)>0:
-        #    for W_cand in W_cands:
-        #        genMatch1 = False
-        #        genMatch2 = False
-        #        for W in genW:
-        #            if not genMatch1:
-        #                genMatch1 = self.deltaR(Object.fromDict(W_cand['W'][0]), W)<0.4
-        #            if not genMatch2:
-        #                genMatch2 = self.deltaR(Object.fromDict(W_cand['W'][1]), W)<0.4
-        #        if genMatch1 and genMatch2:
-        #            perfectMatch = W_cand
-        # #           print "Nice, found the right pair"
-        #            break
-        #    
-        #    for recoW in W_cands[0]['W']:
-        #        genMatch = False
-        #        for W in genW:
-        #            genMatch = self.deltaR(Object.fromDict(recoW), W)<0.4
-        #            if genMatch: break
-        #        recoWs.append({'pt':recoW['pt'], 'eta':recoW['eta'], 'phi':recoW['phi'], 'mass':recoW['mass'], 'genMatch':genMatch})
-        #        diWness = W_cands[0]['chi2']
-
-
-        self.out.fillBranch("Muon_isTight",     isTightMuon)
-        self.out.fillBranch("Muon_isVeto",      isVetoMuon)
-        self.out.fillBranch("Electron_isTight", isTightElectron)
-        self.out.fillBranch("Electron_isVeto",  isVetoElectron)
-        self.out.fillBranch("Jet_leptonClean",   cleanMaskV)
-        self.out.fillBranch("Jet_isGoodJet",    isGoodJet)
-        self.out.fillBranch("Jet_isGoodJetAll", isGoodJetAll)
-        self.out.fillBranch("Jet_isGoodBJet",   isGoodBJet)
-        self.out.fillBranch("Jet_WIdx",   WIdx)
-        self.out.fillBranch("nGoodBTag",        sum(isGoodBJet))
-        self.out.fillBranch("nGoodJet",         sum(isGoodJet))
-
-        self.out.fillBranch("isSingleLep",      isSingleLep)
-        self.out.fillBranch("isDiLep",          isDiLep)
-        self.out.fillBranch("isTriLep",         isTriLep)
-        self.out.fillBranch("isSS",             isSS)
-        self.out.fillBranch("diWness",          diWness)
-        self.out.fillBranch("MT",               MT)
-        self.out.fillBranch("MT_puppi",         MT_puppi)
-
         # make pandas dataframe out of list
         leptons_pd = pd.DataFrame(leptons)
 
-        self.out.fillBranch("nVetoLepton",          len(vleptons) )
         self.out.fillBranch("nLepton",          len(leptons_pd) )
         if len(leptons_pd)>0:
             self.out.fillBranch("Lepton_pt",        leptons_pd.sort_values(by='pt', ascending=False)['pt'].tolist() )
@@ -396,22 +178,6 @@ class PhysicsObjects(Module):
             self.out.fillBranch("Lepton_miniIso",   leptons_pd.sort_values(by='pt', ascending=False)['miniIso'].tolist() )
             self.out.fillBranch("Lepton_muIndex",   leptons_pd.sort_values(by='pt', ascending=False)['muIndex'].tolist() )
             self.out.fillBranch("Lepton_elIndex",   leptons_pd.sort_values(by='pt', ascending=False)['elIndex'].tolist() )
-
-        recoWs_pd = pd.DataFrame(recoWs)
-
-        self.out.fillBranch("nRecoW",          len(recoWs_pd) )
-        if len(recoWs_pd)>0:
-            self.out.fillBranch("RecoW_pt",        recoWs_pd['pt'].tolist() )
-            self.out.fillBranch("RecoW_eta",       recoWs_pd['eta'].tolist() )
-            self.out.fillBranch("RecoW_phi",       recoWs_pd['phi'].tolist() )
-            self.out.fillBranch("RecoW_mass",      recoWs_pd['mass'].tolist() )
-            self.out.fillBranch("RecoW_genPt",     recoWs_pd['genPt'].tolist() )
-            self.out.fillBranch("RecoW_genEta",     recoWs_pd['genEta'].tolist() )
-            self.out.fillBranch("RecoW_genPhi",     recoWs_pd['genPhi'].tolist() )
-            self.out.fillBranch("RecoW_genMass",     recoWs_pd['genMass'].tolist() )
-            self.out.fillBranch("RecoW_qglSum",     recoWs_pd['qgl_sum'].tolist() )
-            self.out.fillBranch("RecoW_qglProd",     recoWs_pd['qgl_prod'].tolist() )
-
 
         return True
 
