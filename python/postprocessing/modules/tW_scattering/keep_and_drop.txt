@@ -138,3 +138,12 @@ keep W*
 keep Top*
 keep Spectator*
 keep Scatter*
+
+keep HLT_PFMET*
+keep HLT_PFHT*
+keep HLT_Ele*
+keep HLT_Mu*
+keep HLT_TkMu*
+keep HLT_DoubleEle*
+keep HLT_Photon*
+keep Flag_*

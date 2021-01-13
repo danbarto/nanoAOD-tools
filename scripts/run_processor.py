@@ -43,8 +43,9 @@ prefetch = False
 
 if files[0].startswith('/store/'):
     #redirector = 'root://xrootd.t2.ucsd.edu:2040/' ## old redirector
-    redirector = 'root://xcache-redirector.t2.ucsd.edu:2040/'
-    prefetch = False
+    #redirector = 'root://xcache-redirector.t2.ucsd.edu:2040/' ## xcache -> problems with stability
+    redirector = 'root://cmsxrootd.fnal.gov/'
+    prefetch = True
     #try:
     #    with time_limit(10):
     #        f = uproot.open(redirector + files[0] )
