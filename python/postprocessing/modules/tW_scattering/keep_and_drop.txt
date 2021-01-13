@@ -147,3 +147,4 @@ keep HLT_TkMu*
 keep HLT_DoubleEle*
 keep HLT_Photon*
 keep Flag_*
+keep PV_*
