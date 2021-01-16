@@ -2,12 +2,10 @@
 drop * # start with all
 
 keep nJet
-keep Jet_pt
-keep Jet_pt_nom
+keep Jet_pt*
 keep Jet_phi
-keep Jet_eta
-keep Jet_mass
-keep Jet_mass_nom
+keep Jet_eta*
+keep Jet_mass*
 keep Jet_btagDeepB
 keep Jet_btagDeepFlavB
 keep Jet_genJetIdx
@@ -134,6 +132,7 @@ keep nLepFromTau
 keep nLepFromW
 keep nLepFromZ
 keep GenL*
+keep GenPart*
 keep W*
 keep Top*
 keep Spectator*
